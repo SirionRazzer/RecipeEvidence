@@ -1,9 +1,61 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
+import java.util.Date;
+import java.util.Set;
+
 /**
- * TODO: create javadoc you lazy bitch
- *
- * @author Tomas Soukal
+ * Recipe contains ingredients and procedure for preparing meal specified by its name.
+ * Each Recipe belongs to at least one Category.
+ * @author Petra Halova
  */
 public class Recipe {
+
+    private Long id;
+    private String name;
+    private Set<String> ingredients;
+    private String procedure;
+    private Date date;
+
+    public Recipe() {
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIngredients(Set<String> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Set<String> getIngredients() {
+        return ingredients;
+    }
+
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public Date getDate() {
+        return date;
+    }
 }

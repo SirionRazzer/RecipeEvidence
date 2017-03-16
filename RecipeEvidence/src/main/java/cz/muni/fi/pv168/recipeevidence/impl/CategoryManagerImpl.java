@@ -10,27 +10,34 @@ import java.util.List;
  * @author Tomas Soukal
  */
 public class CategoryManagerImpl implements CategoryManager {
-    public void createCategory(Category category) {
 
+    @Override
+    public void createCategory(Category category) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void updateCategory(Category category) {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public void deleteCategory(Category category) {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public Category findCategoryById(Long id) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public List<Category> findCategoryByName(String name) {
-        return null;
+    @Override
+    public Category findCategoryByName(String name) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public List<Category> findAllCategories() {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

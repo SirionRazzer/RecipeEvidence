@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.recipeevidence;
 
 import cz.muni.fi.pv168.recipeevidence.impl.Category;
+import cz.muni.fi.pv168.recipeevidence.impl.ServiceFailureException;
 
 import java.util.List;
 
@@ -12,18 +13,45 @@ import java.util.List;
 public interface CategoryManager {
 
     /**
-     * Stores new category into database.
+     * Stores new category into database
      * @param category
      */
-    void createCategory(Category category);
+    void createCategory(Category category) throws ServiceFailureException;
 
-    void updateCategory(Category category);
+    /**
+     * Updates category
+     * @param category
+     * @throws ServiceFailureException
+     */
+    void updateCategory(Category category) throws ServiceFailureException;
 
-    void deleteCategory(Category category);
+    /**
+     * Deletes category
+     * @param category
+     * @throws ServiceFailureException
+     */
+    void deleteCategory(Category category) throws ServiceFailureException;
 
-    Category findCategoryById(Long id);
+    /**
+     * Finds category by the given id
+     * @param id is an id of wanted category
+     * @return category or null
+     * @throws ServiceFailureException
+     */
+    Category findCategoryById(Long id) throws ServiceFailureException;
 
-    List<Category> findCategoryByName(String name);
+    /**
+     * Finds category by the given name
+     * @param name is a name of wanted category
+     * @return category or null
+     * @throws ServiceFailureException
+     */
+    Category findCategoryByName(String name) throws ServiceFailureException;
 
-    List<Category> findAllCategories();
+    /**
+     * Return all categories
+     * @return all categories or list of nulls
+     * @throws ServiceFailureException
+     */
+    List<Category> findAllCategories() throws ServiceFailureException;
 }

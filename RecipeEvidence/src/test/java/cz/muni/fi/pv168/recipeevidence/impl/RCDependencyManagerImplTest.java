@@ -1,7 +1,9 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
 
@@ -15,6 +17,10 @@ import static org.assertj.core.api.Assertions.*;
 public class RCDependencyManagerImplTest {
 
     private RCDependencyManagerImpl manager;
+
+    @Rule
+    // attribute annotated with @Rule annotation must be public :-(
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -54,9 +60,29 @@ public class RCDependencyManagerImplTest {
                 .containsOnly(dependency1);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void createNullDependency() {
+        manager.createDependency(null);
+    }
 
+    @Test
+    public void createDependencyWithExistingId() {
+        RCDependency dependency = sampleDependency().id(1L).build();
+        expectedException.expect(IllegalEntityException.class);
+        manager.createDependency(dependency);
+    }
 
-    //TODO all code below
+    @Test
+    public void createDependencyWithNullRecipe() {
+        RCDependency dependency = sampleDependency().recipe(null).build();
+        manager.createDependency(dependency);
+
+        assertThat(manager.getDependencyById(dependency.getId()))
+                .isNotNull()
+                .isEqualToComparingFieldByField(dependency);
+    }
+
+    //TODO vse nize, od radku 242 v GraveManagerImplTest.java
 
     @Test
     public void deleteDependency() throws Exception {

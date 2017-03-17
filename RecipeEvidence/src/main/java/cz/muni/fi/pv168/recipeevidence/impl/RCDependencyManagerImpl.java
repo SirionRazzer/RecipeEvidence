@@ -5,33 +5,37 @@ import cz.muni.fi.pv168.recipeevidence.RCDependencyManager;
 import java.util.List;
 
 
-public class RCDependencyManagerImpl implements RCDependencyManager{
+public class RCDependencyManagerImpl implements RCDependencyManager {
 
-    public void deleteDependency(RCDependency dependency) {
-
+    public void createDependency(RCDependency dependency) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void updateDependency(RCDependency dependency) {
-
+    public void deleteDependency(RCDependency dependency) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void insertRecipeIntoCategory(Recipe recipe, Category category) {
-
+    public void updateDependency(RCDependency dependency) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public RCDependency getDependencyById(Long id) {
-        return null;
+    public void insertRecipeIntoCategory(Recipe recipe, Category category) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public List<RCDependency> findAllDependencies() {
-        return null;
+    public RCDependency getDependencyById(Long id) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public List<Recipe> findRecipesInCategory(Category category) {
-        return null;
+    public List<RCDependency> findAllDependencies() throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public List<Category> findCategoriesForRecipe(Recipe recipe) {
-        return null;
+    public List<Recipe> findRecipesInCategory(Category category) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public List<Category> findCategoriesForRecipe(Recipe recipe) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

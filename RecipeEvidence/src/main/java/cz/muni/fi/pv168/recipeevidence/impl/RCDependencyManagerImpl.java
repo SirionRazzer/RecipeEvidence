@@ -7,23 +7,15 @@ import java.util.List;
 
 public class RCDependencyManagerImpl implements RCDependencyManager {
 
+    public RCDependency getDependencyById(Long id) throws ServiceFailureException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     public void createDependency(RCDependency dependency) throws ServiceFailureException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public void deleteDependency(RCDependency dependency) throws ServiceFailureException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void updateDependency(RCDependency dependency) throws ServiceFailureException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void insertRecipeIntoCategory(Recipe recipe, Category category) throws ServiceFailureException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public RCDependency getDependencyById(Long id) throws ServiceFailureException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

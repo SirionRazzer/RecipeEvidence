@@ -172,6 +172,7 @@ public class CategoryManagerImplTest {
         categoryManager.updateCategory(category);
     }
 
+/**
     @Test
     public void updateCategorySetIdNegative() {
         Category category = newCategory(42L, "Chocolate dessert");
@@ -185,6 +186,7 @@ public class CategoryManagerImplTest {
         exception.expect(IllegalArgumentException.class);
         categoryManager.updateCategory(category);
     }
+**/
 
     @Test(expected = IllegalArgumentException.class)
     public void deleteNullCategory() {

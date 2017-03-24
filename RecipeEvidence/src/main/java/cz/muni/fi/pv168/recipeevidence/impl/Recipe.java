@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 /**
@@ -14,7 +14,7 @@ public class Recipe {
     private String name;
     private Set<String> ingredients;
     private String procedure;
-    private Date date;
+    private LocalDate date;
 
     public Recipe() {
     }
@@ -35,7 +35,7 @@ public class Recipe {
         this.procedure = procedure;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -55,7 +55,7 @@ public class Recipe {
         return procedure;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 }

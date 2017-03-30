@@ -7,7 +7,7 @@ import java.util.List;
 
 public class RCDependencyManagerImpl implements RCDependencyManager {
 
-    public RCDependency getDependencyById(Long id) throws ServiceFailureException {
+    public RCDependency getDependency(Recipe recipe, Category category) throws ServiceFailureException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

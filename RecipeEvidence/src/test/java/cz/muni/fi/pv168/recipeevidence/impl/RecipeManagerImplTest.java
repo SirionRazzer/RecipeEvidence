@@ -1,33 +1,66 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
+import cz.muni.fi.pv168.recipeevidence.CategoryManager;
+import cz.muni.fi.pv168.recipeevidence.RecipeManager;
+import cz.muni.fi.pv168.recipeevidence.common.DBUtils;
 import junit.framework.TestCase;
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.HashSet;
 import java.util.Set;
+import static org.mockito.Mockito.*;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 /**
  * Created by lenoch on 11.3.17.
  */
-public class RecipeManagerImplTest extends TestCase {
+public class RecipeManagerImplTest  extends TestCase{
 
     private RecipeManagerImpl manager;
+    private DataSource ds;
+    // proc toto? jaky Clock Mock?
+    private final static ZonedDateTime NOW
+            = LocalDateTime.of(2016, Month.FEBRUARY, 29, 14, 00).atZone(ZoneId.of("UTC"));
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+    //--------------------------------------------------------------------------
+    // Test initialization
+    //----------------------------
+    private static DataSource prepareDataSource() throws SQLException{
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        ds.setDatabaseName("memory:recipemgr-test");
+        ds.setCreateDatabase("create");
+        return ds;
+    }
+
+    private static Clock prepareClockMock(ZonedDateTime now){
+        return Clock.fixed(now.toInstant(), now.getZone());
+    }
 
     @Before
     public void setUp() throws SQLException {
-        manager = new RecipeManagerImpl();
+        ds = prepareDataSource();
+        DBUtils.executeSqlScript(ds, RecipeManager.class.getResource("createTables.sql"));
+        manager = new RecipeManagerImpl(prepareClockMock(NOW));
+        manager.setDataSource(ds);
+    }
+
+    //proc GraveManager?
+    @After
+    public void tearDown() throws SQLException{
+        DBUtils.executeSqlScript(ds, CategoryManager.class.getResource("dropTables.sql"));
     }
 
     //--------------------------------------------------------------------------
@@ -302,5 +335,69 @@ public class RecipeManagerImplTest extends TestCase {
     public void testFindRecipeByNullIngredients() throws Exception {
         expectedException.expect(IllegalArgumentException.class);
         manager.findRecipeByIngredients(null);
+    }
+
+
+    //--------------------------------------------------------------------------
+    // Operations with DB
+    //--------------------------------------------------------------------------
+    @Test
+    public void createRecipeWithSqlExceptionThrown() throws SQLException {
+        // Create sqlException, which will be thrown by our DataSource mock
+        // object to simulate DB operation failure
+        SQLException sqlException = new SQLException();
+        // Create DataSource mock object
+        DataSource failingDataSource = mock(DataSource.class);
+        // Instruct our DataSource mock object to throw our sqlException when
+        // DataSource.getConnection() method is called.
+        when(failingDataSource.getConnection()).thenThrow(sqlException);
+        // Configure our manager to use DataSource mock object
+        manager.setDataSource(failingDataSource);
+
+        Recipe recipe = sampleRecipe1();
+
+        // Try to call Manager.createBody(Body) method and expect that exception
+        // will be thrown
+        expectedException.expect(ServiceFailureException.class);
+        manager.createRecipe(recipe);
+    }
+
+    // Now we want to test also other methods of BodyManager. To avoid having
+    // couple of method with lots of duplicit code, we will use the similar
+    // approach as with testUpdateBody(Operation) method.
+
+    private void testExpectedServiceFailureException(Operation<RecipeManager> operation) throws SQLException {
+        SQLException sqlException = new SQLException();
+        DataSource failingDataSource = mock(DataSource.class);
+        when(failingDataSource.getConnection()).thenThrow(sqlException);
+        manager.setDataSource(failingDataSource);
+        expectedException.expect(ServiceFailureException.class);
+        operation.callOn(manager);
+    }
+
+    @Test
+    public void updateRecipeWithSqlExceptionThrown() throws SQLException {
+        Recipe recipe = sampleRecipe1();
+        manager.createRecipe(recipe);
+        testExpectedServiceFailureException((RecipeManager) -> RecipeManager.updateRecipe(recipe));
+    }
+
+    @Test
+    public void getRecipeWithSqlExceptionThrown() throws SQLException {
+        Recipe recipe = sampleRecipe1();
+        manager.createRecipe(recipe);
+        testExpectedServiceFailureException((RecipeManager) -> RecipeManager.findRecipeById(recipe.getId()));
+    }
+
+    @Test
+    public void deleteRecipeWithSqlExceptionThrown() throws SQLException {
+        Recipe recipe = sampleRecipe1();
+        manager.createRecipe(recipe);
+        testExpectedServiceFailureException((RecipeManager) -> RecipeManager.deleteRecipe(recipe));
+    }
+
+    @Test
+    public void findAllRecipesWithSqlExceptionThrown() throws SQLException {
+        testExpectedServiceFailureException(RecipeManager::findAllRecipes);
     }
 }

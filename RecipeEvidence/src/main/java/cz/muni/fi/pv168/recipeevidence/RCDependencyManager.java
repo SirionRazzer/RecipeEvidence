@@ -15,6 +15,13 @@ import java.util.List;
 public interface RCDependencyManager {
 
     /**
+     * @param recipe desired recipe
+     * @param category containing recipe
+     * @return dependency for Recipe and Category
+     * @throws ServiceFailureException
+     */
+    RCDependency getDependency(Recipe recipe, Category category) throws ServiceFailureException;
+    /**
      * Store new dependency into database
      * @param dependency is a new dependency to be stored into database
      * @throws ServiceFailureException

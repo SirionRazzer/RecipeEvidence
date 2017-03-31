@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.recipeevidence.impl.Category;
 import cz.muni.fi.pv168.recipeevidence.impl.RCDependency;
 import cz.muni.fi.pv168.recipeevidence.impl.Recipe;
 import cz.muni.fi.pv168.recipeevidence.impl.ServiceFailureException;
+import org.apache.derby.catalog.Dependable;
 
 import java.util.List;
 
@@ -13,6 +14,22 @@ import java.util.List;
  * @author Petra Halova
  */
 public interface RCDependencyManager {
+
+    /**
+     * Returns dependency for given recipe and category
+     * @param recipe wanted
+     * @param category wanted
+     * @throws ServiceFailureException
+     */
+    RCDependency getDependency(Recipe recipe, Category category) throws ServiceFailureException;
+
+    /**
+     * Insert recipe intro category
+     * @param recipe is recipe to be stored into the category
+     * @param category is target
+     * @throws ServiceFailureException
+     */
+    void insertRecipeIntoCategory(Recipe recipe, Category category) throws ServiceFailureException;
 
     /**
      * Store new dependency into database

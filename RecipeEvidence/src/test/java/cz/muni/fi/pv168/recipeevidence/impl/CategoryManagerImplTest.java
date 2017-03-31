@@ -1,10 +1,15 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,10 +26,39 @@ import static org.junit.Assert.*;
 public class CategoryManagerImplTest {
 
     private CategoryManagerImpl categoryManager;
+    private DataSource dataSource;
+
+    @Rule
+    // attribute annotated with @Rule annotation must be public :-(
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
-        categoryManager = new CategoryManagerImpl();
+    public void setUp() throws SQLException {
+        dataSource = prepareDataSource();
+        try (Connection connection = dataSource.getConnection()) {
+            connection.prepareStatement("CREATE TABLE GRAVE ("
+                    + "id bigint primary key generated always as identity,"
+                    + "col int,"
+                    + "row int,"
+                    + "capacity int not null,"
+                    + "note varchar(255))").executeUpdate();
+        }
+        categoryManager= new CategoryManagerImpl(dataSource);
+    }
+
+    @After
+    public void tearDown() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.prepareStatement("DROP TABLE GRAVE").executeUpdate();
+        }
+    }
+
+    private static DataSource prepareDataSource() throws SQLException {
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        //we will use in memory database
+        ds.setDatabaseName("memory:gravemgr-test");
+        ds.setCreateDatabase("create");
+        return ds;
     }
 
     @Test
@@ -32,7 +66,7 @@ public class CategoryManagerImplTest {
         Category category = newCategory(42L, "Chocolate desserts");
         categoryManager.createCategory(category);
 
-        Long categoryId = category.getCategoryID();
+        Long categoryId = category.getId();
         assertNotNull(categoryId);
 
         Category result = categoryManager.findCategoryById(categoryId);
@@ -52,7 +86,7 @@ public class CategoryManagerImplTest {
 
         Category category = newCategory(42L, "Chocolate desserts");
         categoryManager.createCategory(category);
-        Long categoryId = category.getCategoryID();
+        Long categoryId = category.getId();
 
         Category result = categoryManager.findCategoryById(categoryId);
         assertEquals(category, result);
@@ -131,7 +165,7 @@ public class CategoryManagerImplTest {
         categoryManager.createCategory(category);
         Category result = categoryManager.findCategoryByName("Chocolate dessert");
         assertNotNull(result);
-        assertTrue(result.getCategoryID() == 42L);
+        assertTrue(result.getId() == 42L);
     }
 
     @Test
@@ -141,16 +175,16 @@ public class CategoryManagerImplTest {
         categoryManager.createCategory(category1);
         categoryManager.createCategory(category2);
 
-        Long categoryId = category1.getCategoryID();
+        Long categoryId = category1.getId();
         Category categoryResult = categoryManager.findCategoryById(categoryId);
 
         categoryResult.setCategoryName("Vegetable");
         categoryManager.updateCategory(categoryResult);
         categoryResult = categoryManager.findCategoryById(categoryId);
         assertEquals("Vegetable", categoryResult.getCategoryName());
-        assertTrue(42L == categoryResult.getCategoryID());
+        assertTrue(42L == categoryResult.getId());
 
-        assertDeepEquals(category2, categoryManager.findCategoryById(category2.getCategoryID()));
+        assertDeepEquals(category2, categoryManager.findCategoryById(category2.getId()));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -163,7 +197,7 @@ public class CategoryManagerImplTest {
         Category category = newCategory(42L, "Chocolate dessert");
         categoryManager.updateCategory(category);
 
-        Long categoryId = category.getCategoryID();
+        Long categoryId = category.getId();
         category = categoryManager.findCategoryById(categoryId);
 
         category.setCategoryID(null);
@@ -178,7 +212,7 @@ public class CategoryManagerImplTest {
         Category category = newCategory(42L, "Chocolate dessert");
         categoryManager.createCategory(category);
 
-        Long categoryId = category.getCategoryID();
+        Long categoryId = category.getId();
         category = categoryManager.findCategoryById(categoryId);
 
         category.setCategoryID(-1L);
@@ -237,7 +271,7 @@ public class CategoryManagerImplTest {
     }
 
     private void assertDeepEquals(Category expected, Category actual) {
-        assertEquals(expected.getCategoryID(), actual.getCategoryID());
+        assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getCategoryName(), actual.getCategoryName());
     }
 
@@ -245,7 +279,7 @@ public class CategoryManagerImplTest {
 
         @Override
         public int compare(Category c1, Category c2) {
-            return c1.getCategoryID().compareTo(c2.getCategoryID());
+            return c1.getId().compareTo(c2.getId());
         }
 
     };

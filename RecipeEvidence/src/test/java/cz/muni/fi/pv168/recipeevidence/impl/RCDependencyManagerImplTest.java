@@ -1,17 +1,23 @@
 package cz.muni.fi.pv168.recipeevidence.impl;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import cz.muni.fi.pv168.recipeevidence.CategoryManager;
+import cz.muni.fi.pv168.recipeevidence.common.DBUtils;
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 
+//import javax.sql.DataSource;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
+ *  Test class for {@link RCDependencyManagerImpl}
  *
  * @author Petra Halová
  */
@@ -20,15 +26,36 @@ public class RCDependencyManagerImplTest {
     private RCDependencyManagerImpl dependencyManager;
     private RecipeManagerImpl recipeManager;
     private CategoryManagerImpl categoryManager;
+    private DataSource ds;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
+
+    //--------------------------------------------------------------------------
+    // Test initialization
+    //--------------------------------------------------------------------------
+
+    private static DataSource prepareDataSource() throws SQLException {
+        EmbeddedDataSource ds = new EmbeddedDataSource();
+        // we will use in memory database
+        ds.setDatabaseName("memory:rcdependencymgr-test");
+        // database is created automatically if it does not exist yet
+        ds.setCreateDatabase("create");
+        return ds;
+    }
+
     @Before
     public void setUp() throws Exception {
+        ds = prepareDataSource();
+        DBUtils.executeSqlScript(ds, CategoryManager.class.getResource("createTables.sql"));
         dependencyManager = new RCDependencyManagerImpl();
+        dependencyManager.setDataSource(ds);
         recipeManager = new RecipeManagerImpl();
+        recipeManager.setDataSource(ds);
         categoryManager = new CategoryManagerImpl();
+        categoryManager.setDataSource(ds);
+        sampleDependency();
     }
 
     //--------------------------------------------------------------------------
@@ -86,9 +113,9 @@ public class RCDependencyManagerImplTest {
         categoryManager.createCategory(emptyCategory);
 
         categoryNotInDatabase = new Category();
-        categoryNotInDatabase.setCategoryID(maso.getCategoryID()+100);
+        categoryNotInDatabase.setCategoryID(maso.getId()+100);
 
-        assertThat(categoryManager.findCategoryById(categoryNotInDatabase.getCategoryID())).isNull();
+        assertThat(categoryManager.findCategoryById(categoryNotInDatabase.getId())).isNull();
 
         recipeNotInDatabase = new Recipe();
         recipeNotInDatabase.setId(recipe1.getId() + 100);
@@ -115,7 +142,7 @@ public class RCDependencyManagerImplTest {
     }
 
 
-        //--------------------------------------------------------------------------
+    //--------------------------------------------------------------------------
     // Tests for create operations
     //--------------------------------------------------------------------------
 

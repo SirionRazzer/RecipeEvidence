@@ -22,7 +22,7 @@ public class Category {
     public Category() {
     }
 
-    public Long getCategoryID() {
+    public Long getId() {
         return categoryID;
     }
 
